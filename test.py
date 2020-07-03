@@ -5,7 +5,7 @@ import os
 
 main_application = tk.Tk()
 main_application.geometry("1200x800")
-main_application.title("'Vpas Text Editor")
+main_application.title("'Vpad Text Editor")
 
 ##################### main menu ##########################
 ######################### end main menu ###################
@@ -99,18 +99,60 @@ font_box.grid(row=0, column=0)
 ## size box
 size_var=tk.IntVar()
 font_size=ttk.Combobox(tool_bar, width=14, textvariable=size_var, state='readonly')
-font_size['values']=tuple(range(8,80,2))
+font_size['values']=tuple(range(8,81,2))
 font_size.current(3)
-font_size.grid(row=0, column=1)
+font_size.grid(row=0, column=1,padx=5)
+
+## bold_button
+bold_icon=tk.PhotoImage(file='icons2/bold.png')
+bold_btn=ttk.Button(tool_bar, image=bold_icon)
+bold_btn.grid(row=0, column=2, padx=5)
+
+## italic_button
+italic_icon=tk.PhotoImage(file='icons2/italic.png')
+italic_btn=ttk.Button(tool_bar, image=italic_icon)
+italic_btn.grid(row=0, column=3, padx=5)
+
+## underline_icon
+underline_icon=tk.PhotoImage(file='icons2/underline.png')
+underline_btn=ttk.Button(tool_bar, image=underline_icon)
+underline_btn.grid(row=0, column= 4, padx=5)
 
 
+## font_color button
+font_color_icon= tk.PhotoImage(file='icons2/font_color.png')
+font_color_btn= ttk.Button(tool_bar, image=font_color_icon)
+font_color_btn.grid(row=0, column=5, padx=5)
+
+## allign left
+align_left_icon=tk.PhotoImage(file='icons2/align_left.png')
+align_left_btn=ttk.Button(tool_bar, image=align_left_icon)
+align_left_btn.grid(row=0, column=6, padx=5)
+
+## align center
+align_center_icon=tk.PhotoImage(file='icons2/align_center.png')
+align_center_btn=ttk.Button(tool_bar, image=align_center_icon)
+align_center_btn.grid(row=0, column=7, padx=5)
+
+## align right
+align_right_icon=tk.PhotoImage(file='icons2/align_right.png')
+align_right_btn=ttk.Button(tool_bar, image=align_right_icon)
+align_right_btn.grid(row=0, column=8, padx=5)
 ######################### end toolbar ###################
+
+
+
 
 ##################### text editor ##########################
 ######################### end text editor ###################
 
+
+
+
 ##################### status bar ##########################
 ######################### end status bar###################
+
+
 
 ##################### main menu functionality ##########################
 ## file commands
