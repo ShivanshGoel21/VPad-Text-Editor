@@ -257,8 +257,12 @@ text_editor.configure(font=(current_font_family,current_font_size))
 status_bar=ttk.Label(main_application, text="Status Bar")
 status_bar.pack(side=tk.BOTTOM)
 
+
+text_changed=False
 def changed(event=None):
+    global text_changed
     if text_editor.edit_modified():
+        text_changed=True
         words=len(text_editor.get(1.0, 'end-1c').split())
         characters=len(text_editor.get(1.0,'end-1c'))
         status_bar.configure(text=f'Characters : {characters} Words: {words}')
@@ -337,19 +341,129 @@ def save_as(event=None):
     except:
         return
 
-file.add_command(label="Save As", image=save_as_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+S')
-file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT, accelerator='Ctrl+Q')
+file.add_command(label="Save As", image=save_as_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+S', command=save_as)
+
+## exit functionality
+
+def exit_func(event=None):
+    global url,text_changed
+    try:
+        if text_changed:
+            mbox = messagebox.askyesnocancel('Warning', 'Do you want to save the file ?')
+            if mbox is True:
+                if url:
+                    content = text_editor.get(1.0,tk.END)
+                    with open(url,'w', encoding='utf-8') as fw:
+                        fw.write(content)
+                        main_application.destroy()
+                else:
+                    content2=str(text_editor.get(1.0, tk.END))
+                    url = filedialog.asksaveasfile(mode= 'w',defaultextension='.txt',  filetypes=(('Text File', '*txt'), ('All File','*.*')))
+                    url.write(content2)
+                    url.close()
+                    main_application.destroy()
+        
+            elif mbox is False:
+                main_application.destroy()
+        else:
+            main_application.destroy()
+
+
+
+    except:
+        return
+
+file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT, accelerator='Ctrl+Q', command=exit_func)
 
 ## edit commands
-edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT, accelerator='Ctrl+C')
-edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT, accelerator='Ctrl+V')
-edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT, accelerator='Ctrl+X')
-edit.add_command(label="Clear All", image=clear_all_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+X')
-edit.add_command(label="Find", image=find_icon, compound=tk.LEFT, accelerator='Ctrl+F')
+
+
+## find functionality
+def find_func(event=None):
+    def find():
+        pass
+
+    def replace():
+        pass
+
+
+
+    find_dialogue=tk.Toplevel()
+    find_dialogue.geometry("450x250+500+200")
+    find_dialogue.title('Find')
+    find_dialogue.resizable(0,0)
+
+
+    ## frame
+    find_frame=ttk.LabelFrame(find_dialogue,text='Find/Replace')
+    find_frame.pack(pady=20)
+
+    ## labels
+    text_find_label=ttk.Label(find_frame, text='Find: ')
+    text_replace_label=ttk.Label(find_frame, text= 'Replace')
+
+    ## entry
+    find_input = ttk.Button(find_frame, text='Find', command=find)
+    replace_input=ttk.Button(find_frame, text='Replace', command=replace)
+     
+    ## button
+    find_button=ttk.Button(find_frame,text='Find', command=find)
+    replace_button=ttk.Button(find_frame, text='Replace', command=replace)
+
+    #label_grid
+    text_find_label.grid(row=0, column=0, padx=4, pady=4)
+    text_replace_label.grid(row=1, column=0, padx=4, pady=4)
+
+    ## entry grid
+    find_input.grid(row=0,column=1,padx=4,pady=4)
+    replace_input.grid(row=1, column=1, padx=4,pady=4)
+
+    ## button grid
+    find_button.grid(row=2, column=0, padx=8, pady=4)
+    replace_button.grid(row=2, column=1, padx=8, pady=4)
+
+    find_dialogue.mainloop()
+
+
+
+edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT, accelerator='Ctrl+C',command=lambda:text_editor.event_generate("<Control c>"))
+edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT, accelerator='Ctrl+V', command=lambda:text_editor.event_generate("<Control v>"))
+edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT, accelerator='Ctrl+X',command=lambda:text_editor.event_generate("<Control x>"))
+edit.add_command(label="Clear All", image=clear_all_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+X',command= lambda:text_editor.delete(1.0, tk.END))
+edit.add_command(label="Find", image=find_icon, compound=tk.LEFT, accelerator='Ctrl+F',command = find_func)
 
 ## check buttons
-view.add_checkbutton(label="Tool Bar" , image=tool_bar_icon, compound=tk.LEFT)
-view.add_checkbutton(label="Status Bar", image=status_bar_icon, compound=tk.LEFT)
+
+show_status_bar=tk.BooleanVar()
+show_status_bar.set(True)
+show_tool_bar=tk.BooleanVar()
+show_tool_bar.set(True)
+
+def hide_toolbar():
+    global show_tool_bar
+    if show_tool_bar:
+        tool_bar.pack_forget()
+        show_tool_bar=False
+    else:
+        text_editor.pack_forget()
+        status_bar.pack_forget()
+        tool_bar.pack(side=tk.TOP, fill=tk.X)
+        text_editor.pack(fill=tk.BOTH, expand=True)
+        status_bar.pack(side=tk.BOTTOM)
+        show_tool_bar=True
+
+def hide_statusbar():
+    global show_status_bar
+    if show_status_bar:
+        status_bar.pack_forget()
+        show_status_bar=False
+    else:
+        status_bar.pack(side=tk.BOTTOM)
+        show_status_bar=True
+
+view.add_checkbutton(label="Tool Bar" ,onvalue=True,offvalue=False,variable=show_tool_bar, image=tool_bar_icon, compound=tk.LEFT, command=hide_toolbar)
+view.add_checkbutton(label="Status Bar",onvalue=True, offvalue=False, variable=show_status_bar,image=status_bar_icon, compound=tk.LEFT, command=hide_statusbar)
+
 
 ## color theme
 count=0
