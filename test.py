@@ -6,10 +6,11 @@ import os
 main_application = tk.Tk()
 main_application.geometry("1200x800")
 main_application.title("'Vpad Text Editor")
-
+# main_application.wm_iconbitmap('icon.ico')
+# app_icon=tk.PhotoImage('icon.png')
+# main_application.wm_iconphoto(False,app_icon)
 ##################### main menu ##########################
 main_menu=tk.Menu()
-
 ######################### end main menu ###################
 
 ############################## all icons ###############################
@@ -91,7 +92,7 @@ font_family=tk.StringVar()
 
 font_box=ttk.Combobox(tool_bar, width=30, textvar=font_family, state='readonly')
 font_box['values']=font_tuples
-font_box.current(font_tuples.index('Ubuntu'))
+font_box.current(font_tuples.index('Arial'))
 font_box.grid(row=0, column=0)
 
 
@@ -466,11 +467,28 @@ view.add_checkbutton(label="Status Bar",onvalue=True, offvalue=False, variable=s
 
 
 ## color theme
+
+def change_theme():
+    choden_theme=theme_choice.get()
+    color_tuple=color_dict.get(choden_theme)
+    fg_color, bg_color=color_tuple[0], color_tuple[1]
+    text_editor.config(background=bg_color, fg=fg_color)
+
+
+
 count=0
 for i in color_dict:
-    color_theme.add_radiobutton(label=i, image=color_icons[count], variable=theme_choice, compound=tk.LEFT)
+    color_theme.add_radiobutton(label=i, image=color_icons[count], variable=theme_choice, compound=tk.LEFT, command=change_theme)
     count+=1
 ######################### end main menu functionality ###################
 
 main_application.config(menu=main_menu)
+
+### bind_shortcut_keys
+
+main_application.bind("<Control-n>",new_file)
+main_application.bind("<Control-o>",open_file)
+main_application.bind("<Control-s>",save_file)
+main_application.bind("<Control-Alt-s>",save_as)
+main_application.bind("<Control-q>",exit_func)
 main_application.mainloop()
