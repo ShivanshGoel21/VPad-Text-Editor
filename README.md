@@ -1,6 +1,6 @@
 # VPad-Text-Editor
-<img src="/shivansh-goel/VPad-Text-Editor/blob/master/Screenshot%20(33).png?raw=true" alt="Screenshot (33).png">
 This is a text editor which can perform all basic operations, that one can expect from a text editor.
+<img src="https://github.com/shivansh-goel/VPad-Text-Editor/blob/master/Screenshot%20(33).png">
 <h2>Supports following functionalities:</h2>
 <ul>
 <li>Different fonts and font size</li>
