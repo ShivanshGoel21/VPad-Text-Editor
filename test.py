@@ -8,10 +8,9 @@ main_application.geometry("1200x800")
 main_application.title("'Vpad Text Editor")
 
 ##################### main menu ##########################
-######################### end main menu ###################
 main_menu=tk.Menu()
 
-
+######################### end main menu ###################
 
 ############################## all icons ###############################
 #fileicons
@@ -144,21 +143,200 @@ align_right_btn.grid(row=0, column=8, padx=5)
 
 
 ##################### text editor ##########################
+text_editor= tk.Text(main_application)
+text_editor.config(wrap='word', relief=tk.FLAT)
+scroll_bar=tk.Scrollbar(main_application)
+scroll_bar.pack(side=tk.RIGHT,fill=tk.Y)
+text_editor.focus_set()
+text_editor.pack(fill='both', expand=True)
+scroll_bar.config(command=text_editor.yview)
+text_editor.config(yscrollcommand=scroll_bar.set)
+
+##font family and font size functionality
+
+
+
+current_font_family='Ubuntu'
+current_font_size=14
+
+
+def change_font(event=None):
+    global current_font_family
+    current_font_family = font_family.get()
+    text_editor.configure(font=(current_font_family,current_font_size))
+
+def change_font_size(event=None):
+    global current_font_size
+    current_font_size = font_size.get()
+    text_editor.configure(font=(current_font_family,current_font_size))
+
+font_size.bind('<<ComboboxSelected>>',change_font_size)
+font_box.bind('<<ComboboxSelected>>', change_font)
+
+######## buttons functionalities
+
+##boldbutton functionality
+def change_bold():
+    text_property = tk.font.Font(font=text_editor['font'])
+    if(text_property.actual()['weight']=='normal'):
+        text_editor.configure(font=(current_font_family,current_font_size,'bold'))
+    
+    elif(text_property.actual()['weight']=='bold'):
+        text_editor.configure(font=(current_font_family,current_font_size,'normal'))
+
+bold_btn.configure(command=change_bold)
+
+## italic button functionality
+def change_italic():
+    text_property = tk.font.Font(font=text_editor['font'])
+    if(text_property.actual()['slant']=='roman'):
+        text_editor.configure(font=(current_font_family,current_font_size,'italic'))
+    
+    elif(text_property.actual()['slant']=='italic'):
+        text_editor.configure(font=(current_font_family,current_font_size,'roman'))
+
+italic_btn.configure(command=change_italic)
+
+
+## underline
+def change_underline():
+    text_property=tk.font.Font(font=text_editor['font'])
+    if(text_property.actual()['underline']==0):
+        text_editor.configure(font=(current_font_family,current_font_size,'underline'))
+
+    elif(text_property.actual()['underline']==1):
+        text_editor.configure(font=(current_font_family,current_font_size,'normal'))
+
+underline_btn.configure(command=change_underline)
+
+## changecolor_functionality
+def change_font_color():
+    color_var = tk.colorchooser.askcolor()
+    text_editor.configure(fg=color_var[1])
+
+font_color_btn.configure(command=change_font_color)
+
+## align left functionality
+
+def align_left():
+    text_content = text_editor.get(1.0,'end')
+    text_editor.tag_config('left', justify=tk.LEFT)
+    text_editor.delete(1.0,tk.END)
+    text_editor.insert(tk.INSERT,text_content,'left')
+
+align_left_btn.configure(command=align_left)
+
+
+## align center
+def align_center():
+    text_content = text_editor.get(1.0,'end')
+    text_editor.tag_config('center', justify=tk.CENTER)
+    text_editor.delete(1.0,tk.END)
+    text_editor.insert(tk.INSERT,text_content,'center')
+
+align_center_btn.configure(command=align_center)
+
+## align right
+def align_right():
+    text_content = text_editor.get(1.0,'end')
+    text_editor.tag_config('right', justify=tk.RIGHT)
+    text_editor.delete(1.0,tk.END)
+    text_editor.insert(tk.INSERT,text_content,'right')
+
+align_right_btn.configure(command=align_right)
+
+
+text_editor.configure(font=(current_font_family,current_font_size))
+
 ######################### end text editor ###################
 
 
 
 
 ##################### status bar ##########################
+status_bar=ttk.Label(main_application, text="Status Bar")
+status_bar.pack(side=tk.BOTTOM)
+
+def changed(event=None):
+    if text_editor.edit_modified():
+        words=len(text_editor.get(1.0, 'end-1c').split())
+        characters=len(text_editor.get(1.0,'end-1c'))
+        status_bar.configure(text=f'Characters : {characters} Words: {words}')
+    text_editor.edit_modified(False)
+    
+text_editor.bind('<<Modified>>', changed)
+
+
 ######################### end status bar###################
 
 
 
 ##################### main menu functionality ##########################
+
+#variable
+url=''
+
+#new functionality
+
+def new_file(event=None):
+    global url
+    url = ''
+    text_editor.delete(1.0,tk.END)
+    
 ## file commands
-file.add_command(label="New", image=new_icon, compound=tk.LEFT, accelerator='Ctrl+N')
-file.add_command(label="Open", image=open_icon, compound=tk.LEFT, accelerator='Ctrl+O')
-file.add_command(label="Save", image=save_icon, compound=tk.LEFT, accelerator='Ctrl+S')
+file.add_command(label="New", image=new_icon, compound=tk.LEFT, accelerator='Ctrl+N', command=new_file)
+
+#open functionality
+def open_file(event=None):
+    global url
+    url=filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File', filetypes=(('Text File', '*txt'), ('All File','*.*')))
+    try:
+        with open(url, 'r') as fr:
+            text_editor.delete(1.0,tk.END)
+            text_editor.insert(1.0,fr.read())
+        
+    except FileNotFoundError:
+        return
+    
+    except:
+        return
+    main_application.title(os.path.basename(url))
+
+file.add_command(label="Open", image=open_icon, compound=tk.LEFT, accelerator='Ctrl+O', command=open_file)
+
+## save file functionality
+
+def save_file(event=None):
+    global url
+    try:
+        if url:
+            content = str(text_editor.get(1.0,tk.END))
+            with open(url, 'w', encoding='utf-8') as fw:
+                fw.write(content)
+        
+        else:
+            url = filedialog.asksaveasfile(mode='w', defaultextension='.txt',  filetypes=(('Text File', '*txt'), ('All File','*.*')))
+            content2=text_editor.get(1.0,tk.END)
+            url.write(content2)
+            url.close()
+    except:
+        return
+
+
+file.add_command(label="Save", image=save_icon, compound=tk.LEFT, accelerator='Ctrl+S',command=save_file)
+
+
+## save as functionality
+def save_as(event=None):
+    global url
+    try:
+        content=text_editor.get(1.0,tk.END)
+        url = filedialog.asksaveasfile(mode= 'w',defaultextension='.txt',  filetypes=(('Text File', '*txt'), ('All File','*.*')))
+        url.write(content)
+        url.close()
+    except:
+        return
+
 file.add_command(label="Save As", image=save_as_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+S')
 file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT, accelerator='Ctrl+Q')
 
