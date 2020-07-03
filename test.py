@@ -45,25 +45,16 @@ night_blue_icon=tk.PhotoImage(file='icons2/night_blue.png')
 
 #dropdown for file menu
 file=tk.Menu(main_menu, tearoff=False)
-file.add_command(label="New", image=new_icon, compound=tk.LEFT, accelerator='Ctrl+N')
-file.add_command(label="Open", image=open_icon, compound=tk.LEFT, accelerator='Ctrl+O')
-file.add_command(label="Save", image=save_icon, compound=tk.LEFT, accelerator='Ctrl+S')
-file.add_command(label="Save As", image=save_as_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+S')
-file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT, accelerator='Ctrl+Q')
+
 
 
 #dropdown for edit menu
 edit=tk.Menu(main_menu, tearoff=False)
-edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT, accelerator='Ctrl+C')
-edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT, accelerator='Ctrl+V')
-edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT, accelerator='Ctrl+X')
-edit.add_command(label="Clear All", image=clear_all_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+X')
-edit.add_command(label="Find", image=find_icon, compound=tk.LEFT, accelerator='Ctrl+F')
+
 
 #dropdown for view menu
 view=tk.Menu(main_menu, tearoff=False)
-view.add_checkbutton(label="Tool Bar" , image=tool_bar_icon, compound=tk.LEFT)
-view.add_checkbutton(label="Status Bar", image=status_bar_icon, compound=tk.LEFT)
+
 
 
 # color_theme
@@ -80,11 +71,7 @@ color_dict = {
     'Night Blue' :('#ededed', '#6b9dc2')
 }
 
-count=0
-for i in color_dict:
-    color_theme.add_radiobutton(label=i, image=color_icons[count], variable=theme_choice, compound=tk.LEFT)
-    count+=1
-    
+
 
 #cascade
 main_menu.add_cascade(label="File" , menu=file)
@@ -96,6 +83,27 @@ main_menu.add_cascade(label="Color_Theme" , menu=color_theme)
 
 
 ##################### toolbar ##########################
+tool_bar=ttk.Label(main_application)
+tool_bar.pack(side=tk.TOP,fill=tk.X)
+
+
+font_tuples=tk.font.families()
+font_family=tk.StringVar()
+
+font_box=ttk.Combobox(tool_bar, width=30, textvar=font_family, state='readonly')
+font_box['values']=font_tuples
+font_box.current(font_tuples.index('Ubuntu'))
+font_box.grid(row=0, column=0)
+
+
+## size box
+size_var=tk.IntVar()
+font_size=ttk.Combobox(tool_bar, width=14, textvariable=size_var, state='readonly')
+font_size['values']=tuple(range(8,80,2))
+font_size.current(3)
+font_size.grid(row=0, column=1)
+
+
 ######################### end toolbar ###################
 
 ##################### text editor ##########################
@@ -105,6 +113,29 @@ main_menu.add_cascade(label="Color_Theme" , menu=color_theme)
 ######################### end status bar###################
 
 ##################### main menu functionality ##########################
+## file commands
+file.add_command(label="New", image=new_icon, compound=tk.LEFT, accelerator='Ctrl+N')
+file.add_command(label="Open", image=open_icon, compound=tk.LEFT, accelerator='Ctrl+O')
+file.add_command(label="Save", image=save_icon, compound=tk.LEFT, accelerator='Ctrl+S')
+file.add_command(label="Save As", image=save_as_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+S')
+file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT, accelerator='Ctrl+Q')
+
+## edit commands
+edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT, accelerator='Ctrl+C')
+edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT, accelerator='Ctrl+V')
+edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT, accelerator='Ctrl+X')
+edit.add_command(label="Clear All", image=clear_all_icon, compound=tk.LEFT, accelerator='Ctrl+Alt+X')
+edit.add_command(label="Find", image=find_icon, compound=tk.LEFT, accelerator='Ctrl+F')
+
+## check buttons
+view.add_checkbutton(label="Tool Bar" , image=tool_bar_icon, compound=tk.LEFT)
+view.add_checkbutton(label="Status Bar", image=status_bar_icon, compound=tk.LEFT)
+
+## color theme
+count=0
+for i in color_dict:
+    color_theme.add_radiobutton(label=i, image=color_icons[count], variable=theme_choice, compound=tk.LEFT)
+    count+=1
 ######################### end main menu functionality ###################
 
 main_application.config(menu=main_menu)
